@@ -22,12 +22,14 @@ def main():
     args = parser.parse_args()
     # Now we can access `args.user_prompt`
 
-    print("[Hello from llm-project1!]")
+    # print("[Hello from llm-project1!]")
 
     contents = args.user_prompt
     print(f"\n[User Prompt: {contents}]")
 
-    messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
+    messages = [types.Content(
+        role="user", parts=[types.Part(text=args.user_prompt)]
+    )]
 
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -60,8 +62,8 @@ def main():
         except Exception as e:
             raise RuntimeError(f"Failure on calling 'generate_content' - {e}")
 
-        if response.usage_metadata is None:
-            raise RuntimeError("API called failed")
+        if not response.usage_metadata:
+            raise RuntimeError("API call failed")
         elif args.verbose:
             prompt_count = response.usage_metadata.prompt_token_count
             candidates_count = response.usage_metadata.candidates_token_count
@@ -118,9 +120,10 @@ def main():
                 elif response.text:
                     print("Final response:")
                     print(f"{response.text}\n")
+
                     should_continue = False
                     break
-    
+
         msg = types.Content(role = "user", parts = res_lst)
         messages.append(msg)
 
